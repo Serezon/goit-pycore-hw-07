@@ -1,5 +1,5 @@
 from collections import UserDict
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Field:
     def __init__(self, value):
@@ -31,13 +31,18 @@ class Record:
         self.birthday = None
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}, birthday: {self.birthday.value.date() if self.birthday else None}"
 
     def add_birthday(self, birthday):
         self.birthday = Birthday(birthday)
 
     def add_phone(self, phone):
         self.phones.append(Phone(phone))
+    
+    def remove_phone(self, phone):
+        for p in self.phones:
+            if p.value == phone:
+                self.phones.remove(p)
 
     def edit_phone(self, old_phone, new_phone):
         for phone in self.phones:
@@ -77,31 +82,37 @@ def get_upcoming_birthdays(address_book):
             birthday = birthday.replace(year=today.year + 1)
 
         if birthday.weekday() >= 5:
-            birthday = birthday + datetime.timedelta(days=7 - birthday.weekday())
+            birthday = birthday + timedelta(days=7 - birthday.weekday())
 
         if (birthday - today).days <= 7:
             upcoming_birthdays.append(user)
             
     return upcoming_birthdays
 
-def main():
-    book = AddressBook()
-
+def populate_address_book(address_book):
     record1 = Record("John")
     record1.add_phone("1234567890")
-    book.add_record(record1)
+    address_book.add_record(record1)
     
     record2 = Record("Alice")
     record2.add_phone("0987654321")
     record2.add_birthday("01.01.2000")
-    book.add_record(record2)
+    address_book.add_record(record2)
 
     record3 = Record("Bob")
     record3.add_phone("1112223334")
-    record3.add_birthday("01.11.2024")
-    book.add_record(record3)
+    record3.add_birthday("02.11.2024")
+    address_book.add_record(record3)
 
-    print(get_upcoming_birthdays(book))
+def main():
+    book = AddressBook()
+
+    populate_address_book(book)
+
+    upcoming = get_upcoming_birthdays(book)
+    print("Upcoming birthdays:")
+    for user in upcoming:
+        print(user)
 
 if __name__ == "__main__":
     main()

@@ -1,5 +1,5 @@
 from functools import wraps
-import task1 as contact_book
+import task1 as address_book
 
 def input_error_factory(default_message="Invalid input", value_error_message=None, index_error_message=None):
     if value_error_message is None:
@@ -37,7 +37,7 @@ def add_contact(args, contacts):
         contacts[name].add_phone(phone)
         return "Phone added to existing contact."
 
-    record = contact_book.Record(name)
+    record = address_book.Record(name)
     record.add_phone(phone)
     contacts.add_record(record)
     return "Contact added."
@@ -78,7 +78,7 @@ def get_birthday(args, contacts):
     else:
         return "Contact not found."
 
-@input_error_factory(value_error_message="Please provide a name.")
+@input_error_factory(value_error_message="Please provide a name and a birthday.")
 def add_birthday(args, contacts):
     name, birthday = args
     if name in contacts:
@@ -91,7 +91,7 @@ def get_upcoming_birthdays(contacts):
     def print_birthday(contact):
         return f"{contact.name.value} has a birthday on {contact.birthday.value.date()}"
 
-    return "\n".join([print_birthday(contact) for contact in contact_book.get_upcoming_birthdays(contacts)])
+    return "\n".join([print_birthday(contact) for contact in address_book.get_upcoming_birthdays(contacts)])
 
 def get_contacts(contacts):
     return contacts
@@ -113,7 +113,9 @@ def help():
     """
 
 def main():
-    contacts = contact_book.AddressBook()
+    contacts = address_book.AddressBook()
+    # Uncomment the line below to populate the address book with some contacts
+    #address_book.populate_address_book(contacts)
     print("Welcome to the assistant bot!")
     while True:
         user_input = input("Enter a command: ")
